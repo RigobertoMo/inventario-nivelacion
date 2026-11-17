@@ -8,6 +8,7 @@ $consulta = $conexion->query(
         id,
         nombre,
         cantidad,
+        stock_minimo,
         estado,
         fecharegistro
     FROM productos
@@ -43,7 +44,7 @@ $estado = $_GET['estado'] ?? '';
     <section class="tarjeta formulario">
         <h2>Registrar producto</h2>
         <p class="descripcion">
-            Escriba el nombre del producto y su cantidad.
+            Escriba el nombre del producto, su cantidad y el stock mínimo.
         </p>
 
         <?php if ($estado === 'guardado'): ?>
@@ -78,6 +79,10 @@ $estado = $_GET['estado'] ?? '';
             <div class="mensaje error">No se pudo actualizar el estado.</div>
         <?php endif; ?>
 
+        <?php if ($estado === 'stock_minimo_invalido'): ?>
+            <div class="mensaje error">El stock mínimo debe ser un número entero entre 5 y 100.</div>
+        <?php endif; ?>
+
         <form action="guardar.php" method="POST">
 
             <div class="campo">
@@ -99,6 +104,19 @@ $estado = $_GET['estado'] ?? '';
                     type="number"
                     id="cantidad"
                     name="cantidad"
+                    placeholder="Ejemplo: 10"
+                    required
+                >
+            </div>
+
+            <div class="campo">
+                <label for="stock_minimo">Stock mínimo</label>
+                <input
+                    type="number"
+                    id="stock_minimo"
+                    name="stock_minimo"
+                    min="5"
+                    max="100"
                     placeholder="Ejemplo: 10"
                     required
                 >
@@ -127,6 +145,7 @@ $estado = $_GET['estado'] ?? '';
                         <th>ID</th>
                         <th>Producto</th>
                         <th>Cantidad</th>
+                        <th>Stock mínimo</th>
                         <th>Estado</th>
                         <th>Fecha</th>
                         <th>Acciones</th>
@@ -137,7 +156,7 @@ $estado = $_GET['estado'] ?? '';
 
                     <?php if (count($productos) === 0): ?>
                         <tr>
-                            <td colspan="6" class="sin-registros">
+                            <td colspan="7" class="sin-registros">
                                 No hay productos registrados.
                             </td>
                         </tr>
@@ -153,6 +172,8 @@ $estado = $_GET['estado'] ?? '';
                             </td>
 
                             <td><?php echo $producto['cantidad']; ?></td>
+
+                            <td><?php echo (int) $producto['stock_minimo']; ?></td>
 
                             <td>
                                 <?php if (($producto['estado'] ?? 'auto') === 'revision'): ?>
